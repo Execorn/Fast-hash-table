@@ -6,7 +6,7 @@
 
 
 ht_t* ht_init(size_t capacity) {
-    if (capacity == 0) {
+    if (capacity <= 0) {
         fprintf(stderr, "Capacity must be positive.\n");
         return NULL;
     }
@@ -22,7 +22,7 @@ ht_t* ht_init(size_t capacity) {
 
     new_ht->nodes = (node_t**) calloc(capacity, sizeof(node_t*));
     if (new_ht->nodes == NULL) {
-        fprintf(stderr, "Can't allocate memory for lists.\n");
+        fprintf(stderr, "Can't allocate memory for linked lists.\n");
         free(new_ht);
         return NULL;
     }
@@ -32,6 +32,7 @@ ht_t* ht_init(size_t capacity) {
 
 ht_t* ht_free(ht_t* table) {
     if (table == NULL) {
+        fprintf(stderr, "Nothing to free in non-existent table.\n");
         return NULL;
     }
 
@@ -42,16 +43,20 @@ ht_t* ht_free(ht_t* table) {
         table->nodes[node] = free_list(table->nodes[node]);
     }
 
+    free(table->nodes);
     free(table);
 
     return NULL;
 }
 
 int ht_insert_key(ht_t* table, const KEY_VALUE_TYPE key, const NODE_VALUE_TYPE value) {
-    assert("DATA_ERROR" && key != NULL && value != NULL);
-
     if (table == NULL) {
         fprintf(stderr, "Can't insert key into non-existent table.\n");
+        return 1;
+    }
+
+    if (table == NULL) {
+        fprintf(stderr, "Can't insert NULL key to the table.\n");
         return 1;
     }
 
@@ -71,15 +76,20 @@ int ht_insert_key(ht_t* table, const KEY_VALUE_TYPE key, const NODE_VALUE_TYPE v
 }
 
 void ht_erase_key(ht_t* table, const KEY_VALUE_TYPE key) {
-    if (table == NULL || key == NULL) {
+    if (table == NULL) {
+        fprintf(stderr, "Nothing to erase in non-existent table.\n");
         return;
+    }
+
+    if (key == NULL) {
+        fprintf(stderr, "Can't erase NULL-key from the table.\n");
     }
 
     uint64_t hash_value = GET_HASH(key);
     table->nodes[hash_value % table->capacity] = erase_node(table->nodes[hash_value % table->capacity], key); 
 }
 
-int ht_expand(ht_t* table) {
+static int ht_expand(ht_t* table) {
     if (table == NULL) {
         fprintf(stderr, "Can't expand non-existent table.\n");
         return 1;
@@ -93,19 +103,23 @@ int ht_expand(ht_t* table) {
         return 1;
     }
     
-    for (size_t node = 0; node < table->capacity; ++table) {
-        if (table->nodes[node]) {
-            uint64_t hash_value = GET_HASH(table->nodes[node]->key);
-            nodes[hash_value % new_capacity] = table->nodes[node];
+    for (size_t node_idx = 0; node_idx < table->capacity; ++node_idx) {
+        if (table->nodes[node_idx]) {
+            uint64_t hash_value = GET_HASH(table->nodes[node_idx]->key);
+            nodes[hash_value % new_capacity] = table->nodes[node_idx];
         }
     }
-    free(nodes);
+
+    free(table->nodes);
+
+    table->nodes    =        nodes;
+    table->capacity = new_capacity;
 
     return 0;
 }
 
-int ht_set_key(node_t** nodes, const size_t capacity, const KEY_VALUE_TYPE key, const NODE_VALUE_TYPE value, size_t* size) {
-    if (nodes == NULL || key == NULL || value == NULL || size == NULL) {
+static int ht_set_key(node_t** nodes, const size_t capacity, const KEY_VALUE_TYPE key, const NODE_VALUE_TYPE value, size_t* size) {
+    if (nodes == NULL || key == NULL|| size == NULL) {
         return 1;
     }
 
@@ -120,24 +134,36 @@ int ht_set_key(node_t** nodes, const size_t capacity, const KEY_VALUE_TYPE key, 
 
 size_t ht_length(ht_t* table) {
     if (table == NULL) {
+        fprintf(stderr, "Non-existent table has no length.\n");
         return 0;
     }
 
     return table->size;
 }
 
-NODE_VALUE_TYPE ht_find(ht_t* table, const KEY_VALUE_TYPE key) {
-    if (table == NULL || key == NULL) {
+NODE_VALUE_TYPE ht_get(ht_t* table, const KEY_VALUE_TYPE key) {
+    if (table == NULL) {
+        fprintf(stderr, "Can't get value from non-existent table.\n");
+        return NULL;
+    }
+
+    if (key == NULL) {
+        fprintf(stderr, "Can't get value from NULL key.\n");
+        return NULL;
+    }
+
+    if (table->nodes == NULL) {
         return NULL;
     }
 
     uint64_t hash_value = GET_HASH(key);
 
-    if (table->nodes == NULL) {
+    node_t* needed_node = find_node(table->nodes[hash_value % table->capacity], key);
+    if (needed_node == NULL) {
         return NULL;
     }
-    NODE_VALUE_TYPE required = get_node_value(table->nodes[hash_value % table->capacity], key);
-    return required ? required : NULL;
+
+    return needed_node->value;
 }
 
 // ? Unused function, I didn't remove it because it may be useful for different hash implementation
@@ -151,7 +177,7 @@ int isPrime(size_t number) {
 }
 
 
-uint64_t HASH_1(const KEY_VALUE_TYPE key) {
+static uint64_t HASH_1(const KEY_VALUE_TYPE key) {
     if (key == NULL) {
         return 0;
     }
@@ -159,7 +185,7 @@ uint64_t HASH_1(const KEY_VALUE_TYPE key) {
     return 1;
 }
 
-uint64_t HASH_2(const KEY_VALUE_TYPE key) {
+static uint64_t HASH_2(const KEY_VALUE_TYPE key) {
     if (key == NULL) {
         return 0;
     }
@@ -167,7 +193,7 @@ uint64_t HASH_2(const KEY_VALUE_TYPE key) {
     return (uint64_t) (*key);
 }
 
-uint64_t HASH_3(const KEY_VALUE_TYPE key) {
+static uint64_t HASH_3(const KEY_VALUE_TYPE key) {
     if (key == NULL) {
         return 0;
     }
@@ -180,7 +206,7 @@ uint64_t HASH_3(const KEY_VALUE_TYPE key) {
     return hash;
 }
 
-uint64_t HASH_4(const KEY_VALUE_TYPE key) {
+static uint64_t HASH_4(const KEY_VALUE_TYPE key) {
     if (key == NULL) {
         return 0;
     }
@@ -188,7 +214,7 @@ uint64_t HASH_4(const KEY_VALUE_TYPE key) {
     return strlen(key);
 }
 
-uint64_t HASH_5(const KEY_VALUE_TYPE key) {
+static uint64_t HASH_5(const KEY_VALUE_TYPE key) {
     if (key == NULL) {
         return 0;
     }
@@ -202,7 +228,7 @@ uint64_t HASH_5(const KEY_VALUE_TYPE key) {
     return hash;
 }
 
-uint64_t HASH_6(const KEY_VALUE_TYPE key) {
+static uint64_t HASH_6(const KEY_VALUE_TYPE key) {
     if (key == NULL) {
         return 0;
     }
@@ -215,17 +241,29 @@ uint64_t HASH_6(const KEY_VALUE_TYPE key) {
 
     return hash;
 }
-
+/*
 int main() {
     ht_t* new_ht =  ht_init(100);
-    ht_insert_key(new_ht, "a", "hello");
-    //ht_erase_key(new_ht, "a");
+    ht_insert_key(new_ht, "a", NULL);
+    ht_erase_key(new_ht, "a");
+    ht_insert_key(new_ht, "a", "505");
 
-    char* retval = ht_find(new_ht, "a");
+    char* retval = ht_get(new_ht, "a");
     if (retval == NULL) {
-        printf("found nothing 1\n");
+        printf("found nothing\n");
     } else {
         printf("i got %s\n", retval);
     }
-    ht_free(new_ht);
+    ht_expand(new_ht);
+    retval = ht_get(new_ht, "a");
+    if (retval == NULL) {
+        printf("after expanding i found nothing\n");
+    } else {
+        printf("after expanding i got %s\n", retval);
+    }
+
+    new_ht = ht_free(new_ht); // ! DONT FORGET TO RE-ASSIGN new_ht NULL value
+
+    retval = ht_get(new_ht, "a");
 }
+*/
