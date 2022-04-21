@@ -1,6 +1,10 @@
 #include "linked_list.h"
 
-static node_t* new_node(const KEY_VALUE_TYPE key, const NODE_VALUE_TYPE value) {
+static node_t* new_node(const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value);
+static node_t* free_node(node_t* node);
+
+
+static node_t* new_node(const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value) {
     if (key == NULL) {
         return NULL;
     }
@@ -11,7 +15,7 @@ static node_t* new_node(const KEY_VALUE_TYPE key, const NODE_VALUE_TYPE value) {
         return NULL;
     }
 
-    created_node->key   =  ( KEY_VALUE_TYPE)   key;
+    created_node->key   =  (NODE_KEY_TYPE  )   key;
     created_node->value =  (NODE_VALUE_TYPE) value;
     created_node->next  =                     NULL; 
     
@@ -35,12 +39,16 @@ static node_t* free_node(node_t* node) {
         return NULL;
     }
 
+    node->next  = POISON_PTR;
+    node->key   = POISON_VALUE;
+    node->value = POISON_VALUE;
+
     free(node);
 
     return NULL;
 }
 
-node_t* insert_node(node_t* head, const KEY_VALUE_TYPE key, const NODE_VALUE_TYPE value) {
+node_t* insert_node(node_t* head, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value) {
     if (key == NULL) {
         return head;
     }
@@ -65,13 +73,13 @@ node_t* insert_node(node_t* head, const KEY_VALUE_TYPE key, const NODE_VALUE_TYP
     return head;
 }
 
-node_t* find_node(node_t* head, const KEY_VALUE_TYPE key) {
+node_t* find_node(node_t* head, const NODE_KEY_TYPE key) {
     if (head == NULL || key == NULL) {
         return NULL;
     }
 
     while (head) {
-        if (strcmp(head->key, key) == 0) {
+        if (compare_key(head->key, key) == 0) {
             return head;
         }
         head = head->next;
@@ -80,7 +88,7 @@ node_t* find_node(node_t* head, const KEY_VALUE_TYPE key) {
     return NULL;
 }
 
-node_t* erase_node(node_t* head, const KEY_VALUE_TYPE key) {
+node_t* erase_node(node_t* head, const NODE_KEY_TYPE key) {
     if (head == NULL) {
         return NULL;
     }
@@ -89,7 +97,7 @@ node_t* erase_node(node_t* head, const KEY_VALUE_TYPE key) {
         return head;
     }
 
-    if (strcmp(head->key, key) == 0) {
+    if (compare_key(head->key, key) == 0) {
         node_t* new_head = head->next;
 
         free_node(head);
@@ -99,7 +107,7 @@ node_t* erase_node(node_t* head, const KEY_VALUE_TYPE key) {
     node_t *prev = head, *cur = head->next;
 
     while (cur) {
-        if (strcmp(cur->key, key) == 0) {
+        if (compare_key(cur->key, key) == 0) {
             prev->next = cur->next; // (prev -> cur -> cur.next), so we connect (prev -> cur.next) and skip cur
 
             free(cur);
