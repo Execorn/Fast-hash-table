@@ -40,7 +40,7 @@ static node_t* free_node(node_t* node) {
     }
 
     node->next  = POISON_PTR;
-    node->key   = POISON_VALUE;
+    node->key   = POISON_KEY;
     node->value = POISON_VALUE;
 
     free(node);
@@ -65,11 +65,11 @@ node_t* insert_node(node_t* head, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE
         current_node = head;
     }
 
-    while (current_node != NULL) {
+    while (current_node->next != NULL) {
         current_node = current_node->next;
     }
-
     current_node->next = new_node(key, value);
+
     return head;
 }
 
@@ -108,7 +108,7 @@ node_t* erase_node(node_t* head, const NODE_KEY_TYPE key) {
 
     while (cur) {
         if (compare_key(cur->key, key) == 0) {
-            prev->next = cur->next; // (prev -> cur -> cur.next), so we connect (prev -> cur.next) and skip cur
+            prev->next = cur->next; // ? (prev -> cur -> cur.next), so we connect (prev -> cur.next) and skip cur
 
             free(cur);
             return head;
