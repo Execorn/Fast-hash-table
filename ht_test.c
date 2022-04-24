@@ -7,7 +7,7 @@ void print_pairs(node_t* head, FILE* stream) {
     }
 
     while (head != NULL) {
-        fprintf(stream, "word: %22s  ->  usages: [%4zu]\n", head->key, head->value);
+        print_node(head, stream);
         head = head->next;
     }
 
