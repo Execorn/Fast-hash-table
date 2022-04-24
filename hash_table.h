@@ -26,10 +26,8 @@ ht_t* ht_free(ht_t* table);
 
 int ht_insert_key(ht_t* table, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value);
 
-NODE_VALUE_TYPE ht_find(ht_t* table, const NODE_KEY_TYPE key);
-
 void ht_erase_key(ht_t* table, const NODE_KEY_TYPE key);
 
-NODE_VALUE_TYPE ht_get(ht_t* table, const NODE_VALUE_TYPE value);
+NODE_VALUE_TYPE ht_get(ht_t* table, const NODE_KEY_TYPE key);
 
 int isPrime(size_t number);
