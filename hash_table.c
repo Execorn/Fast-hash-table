@@ -67,7 +67,7 @@ int ht_insert_key(ht_t* table, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE va
         return 1;
     }
 
-    if (table == NULL) {
+    if (key == NULL) {
         fprintf(stderr, "Can't insert NULL key to the table.\n");
         return 1;
     }
@@ -131,14 +131,14 @@ static int ht_expand(ht_t* table) {
 }
 
 static int ht_set_key(node_t** nodes, const size_t capacity, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value, size_t* size) {
-    if (nodes == NULL || key == NULL|| size == NULL) {
+    if (nodes == NULL || key == NULL || size == NULL) {
         return 1;
     }
 
     uint64_t hash_value = GET_HASH(key);
 
     nodes[hash_value % capacity] = insert_node(nodes[hash_value % capacity], key, value);
-    
+
     ++(*size); // ! INCREASE HASH TABLE SIZE
 
     return 0;
@@ -156,23 +156,23 @@ size_t ht_length(ht_t* table) {
 NODE_VALUE_TYPE ht_get(ht_t* table, const NODE_KEY_TYPE key) {
     if (table == NULL) {
         fprintf(stderr, "Can't get value from non-existent table.\n");
-        return NULL;
+        return NODE_DEFAULT_VALUE;
     }
 
     if (key == NULL) {
         fprintf(stderr, "Can't get value from NULL key.\n");
-        return NULL;
+        return NODE_DEFAULT_VALUE;
     }
 
     if (table->nodes == NULL) {
-        return NULL;
+        return NODE_DEFAULT_VALUE;
     }
 
     uint64_t hash_value = GET_HASH(key);
 
     node_t* needed_node = find_node(table->nodes[hash_value % table->capacity], key);
     if (needed_node == NULL) {
-        return NULL;
+        return NODE_DEFAULT_VALUE;
     }
 
     return needed_node->value;
