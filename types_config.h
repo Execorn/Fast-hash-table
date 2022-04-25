@@ -47,5 +47,5 @@ static void print_node(const node_t* node, FILE* stream) {
         return;
     }
 
-    fprintf(stream, "word: %22s  ->  usages: [%4zu]\n", node->key, node->value);
+    fprintf(stream, "word: %22s  ->  usages: [%5zu]\n", node->key, node->value);
 }
