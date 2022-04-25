@@ -10,8 +10,6 @@ void print_pairs(node_t* head, FILE* stream) {
         print_node(head, stream);
         head = head->next;
     }
-
-    return;
 }
 
 
@@ -19,13 +17,13 @@ int main() {
     size_t default_table_cap = 100;
 
     struct stat st;
-    stat("C:/Programming/hash_table/src/war_and_peace.txt", &st);
+    stat("txt_files/war_and_peace.txt", &st);
 
     size_t total_bytes = st.st_size;
 
     // ---------------------------------------------------------------
     char* source = (char*) calloc(total_bytes + 1, sizeof(char));
-    FILE* war_and_piece = fopen("C:/Programming/hash_table/src/war_and_peace.txt", "r");
+    FILE* war_and_piece = fopen("txt_files/war_and_peace.txt", "r");
     if (war_and_piece == NULL) {
         fprintf(stderr, "Can't open src/war_and_peace.txt.\n");
         return 1;
@@ -53,7 +51,7 @@ int main() {
     }
 
     size_t tokens_scanned = 0;
-    while ((token = strtok_r(safe_source, " ()\",.!?<>=:;`-=*0123456789", &safe_source)) != NULL) {
+    while ((token = strtok_r(safe_source, " ()\",.!?~<>=:;`-=*0123456789", &safe_source)) != NULL) {
         ++tokens_scanned;
 
         if (ht_get(words_ht, token) == NODE_DEFAULT_VALUE) {
@@ -71,9 +69,9 @@ int main() {
         }
     }
 
-    FILE* war_and_piece_result = fopen("C:/Programming/hash_table/src/ht_result.txt", "w");
+    FILE* war_and_piece_result = fopen("txt_files/ht_result.txt", "w");
     if (war_and_piece_result == NULL) {
-        fprintf(stderr, "Can't open result file.\n");
+        fprintf(stderr, "Can't open output file.\n");
         return 1;
     }
 
