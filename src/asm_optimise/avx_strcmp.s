@@ -3,7 +3,7 @@ section .text
 
 
 ; ! Using C x86 calling conventions
-avx_strcmp:                             ; ? RAX  avx_strCMP(RDI, RSI)
+avx_strcmp:                             ; ? RAX  avx_strcmp(RDI, RSI)
             XOR R12, R12                ; ? MOV R12, 0
             MOV RAX, 0x00007fffffffde50
 
