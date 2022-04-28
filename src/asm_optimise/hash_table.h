@@ -16,6 +16,7 @@ static const double   LOAD_FACTOR = 0.72f;         // load factor same as in C#
 
 typedef struct {
     node_t**  nodes;
+    
     size_t     size;
     size_t capacity;
 } ht_t;
@@ -29,5 +30,3 @@ int ht_insert_key(ht_t* table, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE va
 void ht_erase_key(ht_t* table, const NODE_KEY_TYPE key);
 
 NODE_VALUE_TYPE ht_get(ht_t* table, const NODE_KEY_TYPE key);
-
-int isPrime(size_t number);
