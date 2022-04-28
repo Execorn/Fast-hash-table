@@ -19,7 +19,7 @@
 #define NODE_DEFAULT_VALUE  0
 #define NODE_DEFAULT_KEY    NULL
 
-
+#define HT_DO_EXPAND        1 // ! 1 = true, 0 = false ONLY 0, 1 req. 
 
 // ! ----------------------------------------------------------------
 //                  ! DO NOT EDIT THIS PART !
