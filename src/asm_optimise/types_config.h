@@ -33,14 +33,14 @@ struct node_t {
 typedef struct node_t node_t;
 // ! ----------------------------------------------------------------
 
-extern int avx_strcmp(const char* a, const char* b);
+extern int my_strcmp(const char* a, const char* b);
 
 
 static int compare_key(const NODE_KEY_TYPE a, const NODE_KEY_TYPE b) {
     if (a == NULL || b == NULL) {
         return 0;
     }    
-    return avx_strcmp(a, b);
+    return my_strcmp(a, b);
 }
 
 static void print_node(const node_t* node, FILE* stream) {
