@@ -1,0 +1,134 @@
+==61== Memcheck, a memory error detector
+==61== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==61== Using Valgrind-3.15.0-608cb11914-20190413 and LibVEX; rerun with -h for copyright info
+==61== Command: build/ht_test_asm_optimize /mnt/c/Programming/hash_table/txt_files/war_and_peace.txt txt_files/ht_result_asm_optimize.txt
+==61== Parent PID: 48
+==61== 
+--61-- 
+--61-- Valgrind options:
+--61--    -s
+--61--    --leak-check=full
+--61--    --track-origins=yes
+--61--    --verbose
+--61--    --log-file=memcheck/valgrind_asm_optimize.txt
+--61--    --show-reachable=yes
+--61--    --track-fds=yes
+--61-- Contents of /proc/version:
+--61--   Linux version 5.10.102.1-microsoft-standard-WSL2 (oe-user@oe-host) (x86_64-msft-linux-gcc (GCC) 9.3.0, GNU ld (GNU Binutils) 2.34.0.20200220) #1 SMP Wed Mar 2 00:30:59 UTC 2022
+--61-- 
+--61-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3-avx-avx2-bmi-f16c-rdrand
+--61-- Page sizes: currently 4096, max supported 4096
+--61-- Valgrind library directory: /usr/lib/x86_64-linux-gnu/valgrind
+--61-- Reading syms from /mnt/c/Programming/hash_table/src/asm_optimise/build/ht_test_asm_optimize
+--61-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-2.31.so
+--61--   Considering /usr/lib/x86_64-linux-gnu/ld-2.31.so ..
+--61--   .. CRC mismatch (computed 0306b78c wanted 8d362b37)
+--61--   Considering /lib/x86_64-linux-gnu/ld-2.31.so ..
+--61--   .. CRC mismatch (computed 0306b78c wanted 8d362b37)
+--61--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/ld-2.31.so ..
+--61--   .. CRC is valid
+--61-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/memcheck-amd64-linux
+--61--    object doesn't have a symbol table
+--61--    object doesn't have a dynamic symbol table
+--61-- Scheduler: using generic scheduler lock implementation.
+--61-- Reading suppressions file: /usr/lib/x86_64-linux-gnu/valgrind/default.supp
+==61== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-61-by-execore-on-???
+==61== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-61-by-execore-on-???
+==61== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-61-by-execore-on-???
+==61== 
+==61== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==61== don't want to do, unless you know exactly what you're doing,
+==61== or are doing some strange experiment):
+==61==   /usr/lib/x86_64-linux-gnu/valgrind/../../bin/vgdb --pid=61 ...command...
+==61== 
+==61== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==61==   /path/to/gdb build/ht_test_asm_optimize
+==61== and then give GDB the following command
+==61==   target remote | /usr/lib/x86_64-linux-gnu/valgrind/../../bin/vgdb --pid=61
+==61== --pid is optional if only one valgrind process is running
+==61== 
+--61-- REDIR: 0x4022e10 (ld-linux-x86-64.so.2:strlen) redirected to 0x580c9ce2 (???)
+--61-- REDIR: 0x4022be0 (ld-linux-x86-64.so.2:index) redirected to 0x580c9cfc (???)
+--61-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_core-amd64-linux.so
+--61--    object doesn't have a symbol table
+--61-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so
+--61--    object doesn't have a symbol table
+==61== WARNING: new redirection conflicts with existing -- ignoring it
+--61--     old: 0x04022e10 (strlen              ) R-> (0000.0) 0x580c9ce2 ???
+--61--     new: 0x04022e10 (strlen              ) R-> (2007.0) 0x0483f060 strlen
+--61-- REDIR: 0x401f5f0 (ld-linux-x86-64.so.2:strcmp) redirected to 0x483ffd0 (strcmp)
+--61-- REDIR: 0x4023370 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4843a20 (mempcpy)
+--61-- Reading syms from /usr/lib/x86_64-linux-gnu/libc-2.31.so
+--61--   Considering /usr/lib/x86_64-linux-gnu/libc-2.31.so ..
+--61--   .. CRC mismatch (computed ef41b1a0 wanted f854b801)
+--61--   Considering /lib/x86_64-linux-gnu/libc-2.31.so ..
+--61--   .. CRC mismatch (computed ef41b1a0 wanted f854b801)
+--61--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libc-2.31.so ..
+--61--   .. CRC is valid
+--61-- REDIR: 0x48f64b0 (libc.so.6:memmove) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f57b0 (libc.so.6:strncpy) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f67e0 (libc.so.6:strcasecmp) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f50d0 (libc.so.6:strcat) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f5810 (libc.so.6:rindex) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f7c80 (libc.so.6:rawmemchr) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x4912d10 (libc.so.6:wmemchr) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x4912850 (libc.so.6:wcscmp) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f6610 (libc.so.6:mempcpy) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f6440 (libc.so.6:bcmp) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f5740 (libc.so.6:strncmp) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f5180 (libc.so.6:strcmp) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f6570 (libc.so.6:memset) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x4912810 (libc.so.6:wcschr) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f56a0 (libc.so.6:strnlen) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f5260 (libc.so.6:strcspn) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f6830 (libc.so.6:strncasecmp) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f5200 (libc.so.6:strcpy) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f6980 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x4913f80 (libc.so.6:wcsnlen) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x4912890 (libc.so.6:wcscpy) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f5850 (libc.so.6:strpbrk) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f5130 (libc.so.6:index) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f5660 (libc.so.6:strlen) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48febd0 (libc.so.6:memrchr) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f6880 (libc.so.6:strcasecmp_l) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f6400 (libc.so.6:memchr) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x4912960 (libc.so.6:wcslen) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f5b10 (libc.so.6:strspn) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f6780 (libc.so.6:stpncpy) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f6720 (libc.so.6:stpcpy) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f7cc0 (libc.so.6:strchrnul) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x48f68d0 (libc.so.6:strncasecmp_l) redirected to 0x48311d0 (_vgnU_ifunc_wrapper)
+--61-- REDIR: 0x49de410 (libc.so.6:__strrchr_avx2) redirected to 0x483ea10 (rindex)
+--61-- REDIR: 0x48f1b40 (libc.so.6:calloc) redirected to 0x483dce0 (calloc)
+--61-- REDIR: 0x48f0110 (libc.so.6:malloc) redirected to 0x483b780 (malloc)
+--61-- REDIR: 0x48f5fd0 (libc.so.6:__GI_strstr) redirected to 0x4843ca0 (__strstr_sse2)
+--61-- REDIR: 0x49e15f0 (libc.so.6:__memcpy_avx_unaligned_erms) redirected to 0x48429f0 (memmove)
+--61-- REDIR: 0x49d99b0 (libc.so.6:__strspn_sse42) redirected to 0x4843ef0 (strspn)
+--61-- REDIR: 0x49d9730 (libc.so.6:__strcspn_sse42) redirected to 0x4843e10 (strcspn)
+--61-- REDIR: 0x49d9ae0 (libc.so.6:__strcmp_avx2) redirected to 0x483fed0 (strcmp)
+--61-- REDIR: 0x48f0700 (libc.so.6:free) redirected to 0x483c9d0 (free)
+--61-- REDIR: 0x49de220 (libc.so.6:__strchrnul_avx2) redirected to 0x4843540 (strchrnul)
+--61-- REDIR: 0x49de5e0 (libc.so.6:__strlen_avx2) redirected to 0x483ef40 (strlen)
+--61-- REDIR: 0x49e15d0 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4843660 (mempcpy)
+==61== 
+==61== FILE DESCRIPTORS: 4 open at exit.
+==61== Open file descriptor 3: /mnt/c/Programming/hash_table/src/asm_optimise/memcheck/valgrind_asm_optimize.txt
+==61==    <inherited from parent>
+==61== 
+==61== Open file descriptor 2: /dev/pts/0
+==61==    <inherited from parent>
+==61== 
+==61== Open file descriptor 1: /dev/pts/0
+==61==    <inherited from parent>
+==61== 
+==61== Open file descriptor 0: /dev/pts/0
+==61==    <inherited from parent>
+==61== 
+==61== 
+==61== HEAP SUMMARY:
+==61==     in use at exit: 0 bytes in 0 blocks
+==61==   total heap usage: 29,969 allocs, 29,969 frees, 34,488,253 bytes allocated
+==61== 
+==61== All heap blocks were freed -- no leaks are possible
+==61== 
+==61== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
