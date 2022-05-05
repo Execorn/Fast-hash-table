@@ -1,5 +1,10 @@
 #include "hash_table.h"
 #include <sys/stat.h>
+#include <immintrin.h>
+#include <string.h>
+#include <stdint.h>
+#include <errno.h>
+
 
 void print_pairs(node_t* head, FILE* stream) {
     if (stream == NULL) {
@@ -13,77 +18,145 @@ void print_pairs(node_t* head, FILE* stream) {
 }
 
 
-int main() {
-    size_t default_table_cap = 100;
+int main(int argc, char** argv) {
+    if (argc < 3) {
+        fprintf(stderr, "Please provide two arguments: source text path, and path of an output file.\n");
+        return EXIT_FAILURE;
+    } else if (argc >= 4) {
+        fprintf(stderr, "Too many arguments.\n");
+        return EXIT_FAILURE;
+    }
 
-    struct stat st;
-    stat("./../../txt_files/war_and_peace.txt", &st);
-
-    size_t total_bytes = st.st_size;
+    char* source_file_path = argv[1];
+    char* output_file_path = argv[2];
+    
+    struct stat source_file_stat;
+    if (stat(source_file_path, &source_file_stat) != 0) {
+        fprintf(stderr, "Can't get '%s' stat. Please check if path is correct and try again.\n", source_file_path);
+        return EXIT_FAILURE;
+    }
+    
+    size_t source_file_size_in_bytes = source_file_stat.st_size;
 
     // ---------------------------------------------------------------
-    char* source = (char*) calloc(total_bytes + 1, sizeof(char));
-    FILE* war_and_piece = fopen("./../../txt_files/war_and_peace.txt", "r");
-    if (war_and_piece == NULL) {
-        fprintf(stderr, "Can't open war_and_peace.txt.\n");
-        return 1;
+    char* source_buffer = (char*) calloc(source_file_size_in_bytes + 1, sizeof(char));
+    if (source_buffer == NULL) {
+        fprintf(stderr, "Can't allocate memory for source file buffer.\n");
+        return EXIT_FAILURE;
     }
+    
+#ifdef __WIN32   
+    #define OPEN_TYPE "rb"
+#else
+    #define OPEN_TYPE "r"    
+#endif
+    FILE* source_file_stream = fopen(source_file_path, OPEN_TYPE);
+    if (source_file_stream == NULL) {
+        fprintf(stderr, "Can't open '%s'. Path is invalid.\n", source_file_path);
 
-    char     cur     = 0;
-    size_t   buf_ptr = 0;
-
-    while ((cur = fgetc(war_and_piece)) != EOF) {
-        if (cur != '\n' && cur != '\r' && cur != '\0' && cur >= 32) {
-            source[buf_ptr++] = cur;
-        } else {
-            source[buf_ptr++] = ' '; // ! removing special characters, adding space separator instead
-        }
+        free(source_buffer);
+        return EXIT_FAILURE;
     }
-    fclose(war_and_piece);
+#undef OPEN_TYPE
+
+    size_t read_bytes = 0;
+    if ((read_bytes = fread(source_buffer, sizeof(char), source_file_size_in_bytes, source_file_stream)) != source_file_size_in_bytes) {
+        fprintf(stderr, "Something went wrong while reading. Read %zu bytes, %zu expected.\n", read_bytes, source_file_size_in_bytes);
+
+        free(source_buffer);
+        fclose(source_file_stream);
+        return EXIT_FAILURE;
+    }
     // ----------------------------------------------------------------
-    char* safe_source = source;
-    char* token       =   NULL;
-
-    ht_t* words_ht = ht_init(default_table_cap);
-    if (words_ht == NULL) {
+    
+    
+    size_t default_table_cap = 100;
+    ht_t* file_content_ht = ht_init(default_table_cap);
+    if (file_content_ht == NULL) {
         fprintf(stderr, "Can't create hash table.\n");
-        return 1;
+
+        free(source_buffer);
+        fclose(source_file_stream);
+        return EXIT_FAILURE;
     }
+    
+    char** tokens = (char**) calloc(default_table_cap, sizeof(char*));
+    if (tokens == NULL) {
+        fprintf(stderr, "Can't allocate memory for token's array.\n");
+        
+        free(source_buffer);
+        fclose(source_file_stream);
+        file_content_ht = ht_free(file_content_ht);
+        return EXIT_FAILURE;
+    }
+    
+    size_t tokens_capacity = default_table_cap;
+    size_t current_tokens  =                 0;
+    
+    
+    char* safe_source = NULL;
+    char* token       = strtok_r(source_buffer, " ()\",.!?~<>=:;`-=*0123456789\t\r\n", &safe_source);
+    
+    while (token != NULL) {
+        if (tokens_capacity <= current_tokens) {
+            char** new_tokens = (char**) realloc(tokens, (size_t) (current_tokens * 1.5) * sizeof(char*));
+            if (new_tokens == NULL) {
+                free(source_buffer);
+                fclose(source_file_stream);
 
-    size_t tokens_scanned = 0;
-    while ((token = strtok_r(safe_source, " ()\",.!?~<>=:;`-=*0123456789", &safe_source)) != NULL) {
-        ++tokens_scanned;
-
-        if (ht_get(words_ht, token) == NODE_DEFAULT_VALUE) {
-            int is_success = ht_insert_key(words_ht, token, 1);
-            if (is_success) {
-                fprintf(stderr, "Can't insert key %s.\n", token);
-                break;
+                free(tokens);
+                file_content_ht = ht_free(file_content_ht);
+                return EXIT_FAILURE;
             }
-        } else {
-            int is_success = ht_insert_key(words_ht, token, ht_get(words_ht, token) + 1);
-            if (is_success) {
-                fprintf(stderr, "Can't insert key %s.\n", token);
-                break;
+            tokens = new_tokens;
+            tokens_capacity = (size_t) (current_tokens * 1.5);
+        }
+        tokens[current_tokens++] = token; // ! Putting token into the array, so we can access it later
+        
+        
+        if (ht_insert_key(file_content_ht, token, ht_get(file_content_ht, token) + 1)) {
+            break;
+        }
+
+        token = strtok_r(NULL, " ()\",.!?~<>=:;`-=*0123456789\t\r\n", &safe_source);
+        
+    }
+    
+    fclose(source_file_stream);
+    
+    size_t find_counter = 0;
+    for (size_t current_cycle = 0; current_cycle < 64; ++current_cycle) {
+        for (size_t token_idx = 0; token_idx < current_tokens; ++token_idx) {
+            if (ht_get(file_content_ht, tokens[token_idx]) != NODE_DEFAULT_VALUE) {
+                ++find_counter;
             }
         }
     }
 
-    FILE* war_and_piece_result = fopen("txt_files/ht_result_asm_optimise.txt", "w");
-    if (war_and_piece_result == NULL) {
+    fprintf(stderr, "I successfully found %zu words with 64 loops.\n", find_counter);
+    
+
+    FILE* output_file_stream = fopen(output_file_path, "w");
+    if (output_file_stream == NULL) {
         fprintf(stderr, "Can't open output file.\n");
-        return 1;
-    }
 
-    for (size_t idx = 0; idx < words_ht->capacity; ++idx) {
-        if (words_ht->nodes[idx] != NULL) {
-            print_pairs(words_ht->nodes[idx], war_and_piece_result);
+        free(source_buffer);
+        free(tokens);
+        
+        file_content_ht = ht_free(file_content_ht);
+        return EXIT_FAILURE;
+    }
+    
+    for (size_t idx = 0; idx < file_content_ht->capacity; ++idx) {
+        if (file_content_ht->nodes[idx] != NULL) {
+            print_pairs(file_content_ht->nodes[idx], output_file_stream);
         }
     }
+    
+    fclose(output_file_stream);
+    free(source_buffer);
+    free(tokens);
+    file_content_ht = ht_free(file_content_ht);
 
-    fclose(war_and_piece_result);
-    free(source);
-    words_ht = ht_free(words_ht);
-
-    return 0;
+    return EXIT_SUCCESS;
 }  
