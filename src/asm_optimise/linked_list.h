@@ -14,3 +14,5 @@ node_t* insert_node(node_t* head, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE
 node_t* erase_node(node_t* head, const NODE_KEY_TYPE key);
 
 node_t* find_node(node_t* head, const NODE_KEY_TYPE key);
+
+node_t* merge_lists(node_t* head, node_t* to_add);
