@@ -1,13 +1,14 @@
-CXXFLAGS = -mavx2 -Wall -Werror -Wno-unused-function -g
+CXXFLAGS = -mavx2 -Wall -Werror -Wno-unused-function -ggdb3 -O3
+
+VALGRIND = valgrind -s --leak-check=full --track-origins=yes --verbose --log-file=valgrind_asm_optimise.txt --show-reachable=yes --track-fds=yes
+WINDOWS = C:/Programming/hash_table/txt_files/war_and_peace.txt txt_files/ht_result_asm_optimise.txt
+UBUNTU = /mnt/c/Programming/hash_table/txt_files/war_and_peace.txt txt_files/ht_result_asm_optimise.txt
 
 execute: ht_test_asm_optimise
-	./build/ht_test_asm_optimise
+	build/ht_test_asm_optimise $(WINDOWS)
 
-ht_test_asm_optimise: hash_table.o linked_list.o ht_test.o my_strcmp.o
-	 gcc $(CXXFLAGS) -o build/ht_test_asm_optimise build/my_strcmp.o build/hash_table.o build/linked_list.o build/ht_test.o
-
-my_strcmp.o: my_strcmp.s
-	nasm -f elf64 my_strcmp.s -o ./build/my_strcmp.o
+ht_test_asm_optimise: hash_table.o linked_list.o ht_test.o
+	gcc $(CXXFLAGS) -o build/ht_test_asm_optimise build/hash_table.o build/linked_list.o build/ht_test.o
 
 ht_test.o: ht_test.c
 	gcc -c ht_test.c $(CXXFLAGS) -o build/ht_test.o
