@@ -1,6 +1,5 @@
 #pragma once
 
-// clang-format off
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
