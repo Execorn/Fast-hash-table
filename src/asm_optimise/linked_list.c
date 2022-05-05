@@ -3,7 +3,6 @@
 static node_t* new_node(const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value);
 static node_t* free_node(node_t* node);
 
-
 static node_t* new_node(const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value) {
     if (key == NULL) {
         return NULL;
@@ -18,17 +17,17 @@ static node_t* new_node(const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value) {
     created_node->key   =  (NODE_KEY_TYPE  )   key;
     created_node->value =  (NODE_VALUE_TYPE) value;
     created_node->next  =                     NULL; 
-    
+
     return created_node;
 }
 
 node_t* free_list(node_t* head) {
     if (head == NULL) {
         return NULL;
-    }
-
+    }   
+    
     if (head->next) {
-        return free_list(head->next);
+        free_list(head->next);
     }    
 
     return free_node(head);   
@@ -73,18 +72,37 @@ node_t* insert_node(node_t* head, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE
     return head;
 }
 
+node_t* merge_lists(node_t* head, node_t* to_add) {
+    if (head == NULL) {
+        return to_add;
+    }
+    if (to_add == NULL) {
+        return head;
+    }
+
+    node_t* cur = head;
+    while (cur->next) {
+        cur = cur->next;
+    }
+
+    cur->next = to_add;
+
+    return head;
+}
+
 node_t* find_node(node_t* head, const NODE_KEY_TYPE key) {
     if (head == NULL || key == NULL) {
         return NULL;
     }
 
-    while (head) {
-        if (compare_key(head->key, key) == 0) {
-            return head;
+    node_t* current_node = head;
+    while (current_node != NULL) {
+        if (compare_key(current_node->key, key) == 0) {
+            return current_node;
         }
-        head = head->next;
+        current_node = current_node->next;
     }
-
+    
     return NULL;
 }
 
@@ -105,12 +123,11 @@ node_t* erase_node(node_t* head, const NODE_KEY_TYPE key) {
     }
 
     node_t *prev = head, *cur = head->next;
-
-    while (cur) {
+    while (cur != NULL) {
         if (compare_key(cur->key, key) == 0) {
-            prev->next = cur->next; // ? (prev -> cur -> cur.next), so we connect (prev -> cur.next) and skip cur
+            prev->next = cur->next; // ? (prev -> cur -> cur.next), so we connect (prev -> cur.next) and delete cur
 
-            free(cur);
+            free_node(cur);
             return head;
         }
         prev = cur;
