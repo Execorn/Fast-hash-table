@@ -103,10 +103,10 @@
 --104-- REDIR: 0x48f0110 (libc.so.6:malloc) redirected to 0x483b780 (malloc)
 --104-- REDIR: 0x48f5fd0 (libc.so.6:__GI_strstr) redirected to 0x4843ca0 (__strstr_sse2)
 --104-- REDIR: 0x49e15f0 (libc.so.6:__memcpy_avx_unaligned_erms) redirected to 0x48429f0 (memmove)
---104-- REDIR: 0x49d99b0 (libc.so.6:__strspn_sse42) redirected to 0x4843ef0 (strspn)
---104-- REDIR: 0x49d9730 (libc.so.6:__strcspn_sse42) redirected to 0x4843e10 (strcspn)
---104-- REDIR: 0x49d9ae0 (libc.so.6:__strcmp_avx2) redirected to 0x483fed0 (strcmp)
 --104-- REDIR: 0x48f0700 (libc.so.6:free) redirected to 0x483c9d0 (free)
+--104-- REDIR: 0x48f0eb0 (libc.so.6:realloc) redirected to 0x483df30 (realloc)
+--104-- REDIR: 0x48f1280 (libc.so.6:memalign) redirected to 0x483e2a0 (memalign)
+--104-- REDIR: 0x49dfeb0 (libc.so.6:__strncpy_avx2) redirected to 0x483f230 (strncpy)
 --104-- REDIR: 0x49de220 (libc.so.6:__strchrnul_avx2) redirected to 0x4843540 (strchrnul)
 --104-- REDIR: 0x49de5e0 (libc.so.6:__strlen_avx2) redirected to 0x483ef40 (strlen)
 --104-- REDIR: 0x49e15d0 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4843660 (mempcpy)
@@ -127,7 +127,7 @@
 ==104== 
 ==104== HEAP SUMMARY:
 ==104==     in use at exit: 0 bytes in 0 blocks
-==104==   total heap usage: 29,969 allocs, 29,969 frees, 34,488,253 bytes allocated
+==104==   total heap usage: 30,004 allocs, 30,004 frees, 417,456,421 bytes allocated
 ==104== 
 ==104== All heap blocks were freed -- no leaks are possible
 ==104== 
