@@ -29,3 +29,5 @@ int ht_insert_key(ht_t* table, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE va
 void ht_erase_key(ht_t* table, const NODE_KEY_TYPE key);
 
 NODE_VALUE_TYPE ht_get(ht_t* table, const NODE_KEY_TYPE key);
+
+size_t ht_print_content(ht_t* table, FILE* output_stream);
