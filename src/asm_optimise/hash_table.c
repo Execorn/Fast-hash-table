@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include "stdlib.h"
-#include "hash_table.h" 
+#include "hash_table.h"
+#include "macro.h" 
 
 #define GET_HASH HASH_6
 
@@ -122,10 +123,10 @@ static int ht_expand(ht_t* table) {
         return 1;
     }
     
-    for (size_t list_idx = 0; list_idx < table->capacity; ++list_idx) {
-        if (table->nodes[list_idx] != NULL) {
-            uint64_t hash_value = GET_HASH(table->nodes[list_idx]->key);
-            nodes[hash_value % new_capacity] = merge_lists(nodes[hash_value % new_capacity], table->nodes[list_idx]);
+    for (size_t node_idx = 0; node_idx < table->capacity; ++node_idx) {
+        if (table->nodes[node_idx] != NULL) {
+            uint64_t hash_value = GET_HASH(table->nodes[node_idx]->key);
+            nodes[hash_value % new_capacity] = merge_lists(nodes[hash_value % new_capacity], table->nodes[node_idx]);
         }
     }
 
@@ -176,20 +177,44 @@ NODE_VALUE_TYPE ht_get(ht_t* table, const NODE_KEY_TYPE key) {
         fprintf(stderr, "Can't get value from NODE_DEFAULT_KEY.\n");
         return NODE_DEFAULT_VALUE;
     }
-    
+     
     if (table->nodes == NULL) {
         return NODE_DEFAULT_VALUE;
     }
     
     uint64_t hash_value = GET_HASH(key);
-    
+     
     node_t* needed_node = find_node(table->nodes[hash_value % table->capacity], key);
     if (needed_node == NULL) {
         return NODE_DEFAULT_VALUE;
     }
-    
+     
     return needed_node->value;
 }
+
+size_t ht_print_content(ht_t* table, FILE* output_stream) {
+    if (table == NULL || output_stream == NULL) {
+        return 0; // ! print out zero nodes if nothing happens
+    }
+
+    if (table->nodes == NULL) {
+        return 0;
+    }
+
+    size_t printed_nodes = 0;
+    
+    for (size_t node_idx = 0; node_idx < table->capacity; ++node_idx) {
+        node_t* current_head = table->nodes[node_idx];
+        while (current_head != NULL) {
+            print_node(current_head, output_stream);
+            ++printed_nodes;
+            current_head = current_head->next;
+        }
+    }
+
+    return printed_nodes;
+}
+
 
 //----------------------------------------------------------------
 // !              HASH FUNCTIONS IMPLEMENTATION
@@ -231,8 +256,12 @@ static uint64_t HASH_5(const NODE_KEY_TYPE key) {
 static uint64_t HASH_6(const NODE_KEY_TYPE key) {
     uint64_t hash = 0;
 
-    while (*key) {
-        hash = _mm_crc32_u8(hash, *(key++));
+    // ! size of string is 32 bytes, it is guaranteed
+
+    for (unsigned i = 0; i < 4; ++i) {
+        hash += _mm_crc32_u64(hash, *((uint64_t*) key));
+        
+        key += 8;
     }
 
     return hash;
