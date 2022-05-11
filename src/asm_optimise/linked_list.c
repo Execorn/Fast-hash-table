@@ -1,4 +1,5 @@
 #include "linked_list.h"
+#include "macro.h"
 
 static node_t* new_node(const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value);
 static node_t* free_node(node_t* node);
@@ -94,15 +95,16 @@ node_t* find_node(node_t* head, const NODE_KEY_TYPE key) {
     if (head == NULL || key == NULL) {
         return NULL;
     }
-
+     
     node_t* current_node = head;
     while (current_node != NULL) {
         if (compare_key(current_node->key, key) == 0) {
             return current_node;
         }
+         
         current_node = current_node->next;
     }
-    
+     
     return NULL;
 }
 
