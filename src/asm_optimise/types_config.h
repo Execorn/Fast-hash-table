@@ -2,6 +2,8 @@
 
 #include <string.h>
 #include <immintrin.h>
+#include <stdio.h>
+
 // ----------------------------------------------------------------
 // ? Here you can define your custom types for hash table 
 // ! Also, don't forget to define default values for your types
@@ -33,14 +35,22 @@ struct node_t {
 typedef struct node_t node_t;
 // ! ----------------------------------------------------------------
 
-//extern int my_strcmp(const char* a, const char* b);
+static int avx_strcmp(const char* a, const char* b) {
+    // ! 'a' and 'b' are guaranteed to be not-NULL 
+    __m256i first  = _mm256_load_si256((const __m256i*) a);
+    __m256i second = _mm256_load_si256((const __m256i*) b);
 
+    // ? compare packed 8-bit integers in a and b for equality
+    __m256i compare = _mm256_cmpeq_epi8(first, second);
+
+    // ? create mask from the most significant bit of each 8-bit element in a
+    int mask = _mm256_movemask_epi8(compare);
+
+    return ~mask; // ! invert mask to get zero if strings are equal
+}
 
 static int compare_key(const NODE_KEY_TYPE a, const NODE_KEY_TYPE b) {
-    if (a == NULL || b == NULL) {
-        return 0;
-    }    
-    return strcmp(a, b);
+    return avx_strcmp(a, b); // * returns non-zero value if strings are not equal, not necessary positive (>) / neg. (<)
 }
 
 static void print_node(const node_t* node, FILE* stream) {
