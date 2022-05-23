@@ -21,11 +21,12 @@ static int ht_set_key(node_t** nodes, const size_t capacity, const NODE_KEY_TYPE
 
 
 ht_t* ht_init(size_t capacity) {
+#if (DO_ASSERTS == 1)    
     if (capacity <= 0) {
         fprintf(stderr, "Capacity must be positive.\n");
         return NULL;
     }
-    
+#endif    
     ht_t* new_ht = (ht_t*) calloc(1, sizeof(ht_t));
     if (new_ht == NULL) {
         fprintf(stderr, "Can't allocate memory for new hash_table.\n");
@@ -46,11 +47,12 @@ ht_t* ht_init(size_t capacity) {
 }
 
 ht_t* ht_free(ht_t* table) {
+#if (DO_ASSERTS == 1)        
     if (table == NULL) {
         fprintf(stderr, "Nothing to free in non-existent table.\n");
         return NULL;
     }
-
+#endif
     for (size_t node_idx = 0; node_idx < table->capacity; ++node_idx) {
         table->nodes[node_idx] = free_list(table->nodes[node_idx]);
     }
@@ -65,6 +67,7 @@ ht_t* ht_free(ht_t* table) {
 }
 
 int ht_insert_key(ht_t* table, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value) {
+#if (DO_ASSERTS == 1)        
     if (table == NULL) {
         fprintf(stderr, "Can't insert key into non-existent table.\n");
         return 1;
@@ -74,7 +77,7 @@ int ht_insert_key(ht_t* table, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE va
         fprintf(stderr, "Can't insert NODE_DEFAULT_KEY to the table.\n");
         return 1;
     }
-    
+#endif    
 #if (HT_DO_EXPAND == 1)
     if (table->size >= table->capacity * LOAD_FACTOR) { // ? If table is filled more than 72% already, we expand it
         if (ht_expand(table)) {
@@ -93,6 +96,7 @@ int ht_insert_key(ht_t* table, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE va
 }
 
 void ht_erase_key(ht_t* table, const NODE_KEY_TYPE key) {
+#if (DO_ASSERTS == 1)        
     if (table == NULL) {
         fprintf(stderr, "Nothing to erase in non-existent table.\n");
         return;
@@ -102,7 +106,7 @@ void ht_erase_key(ht_t* table, const NODE_KEY_TYPE key) {
         fprintf(stderr, "Can't erase NODE_DEFAULT_KEY from the table.\n");
         return;
     }
-
+#endif
     uint64_t hash_value = GET_HASH(key);
     table->nodes[hash_value % table->capacity] = erase_node(table->nodes[hash_value % table->capacity], key); 
 }
@@ -140,10 +144,11 @@ static int ht_expand(ht_t* table) {
 #endif
 
 static int ht_set_key(node_t** nodes, const size_t capacity, const NODE_KEY_TYPE key, const NODE_VALUE_TYPE value, size_t* size) {
+#if (DO_ASSERTS == 1)    
     if (nodes == NULL || key == NULL || size == NULL) {
         return 1;
     }
-
+#endif
     uint64_t hash_value = GET_HASH(key);
 
     node_t* current_node = find_node(nodes[hash_value % capacity], key);
@@ -159,15 +164,17 @@ static int ht_set_key(node_t** nodes, const size_t capacity, const NODE_KEY_TYPE
 }
 
 size_t ht_length(ht_t* table) {
+#if (DO_ASSERTS == 1)    
     if (table == NULL) {
         fprintf(stderr, "Non-existent table has no length.\n");
         return 0;
     }
-
+#endif
     return table->size;
 }
 
 NODE_VALUE_TYPE ht_get(ht_t* table, const NODE_KEY_TYPE key) {
+#if (DO_ASSERTS == 1)    
     if (table == NULL) {
         fprintf(stderr, "Can't get value from non-existent table.\n");
         return NODE_DEFAULT_VALUE;
@@ -181,7 +188,7 @@ NODE_VALUE_TYPE ht_get(ht_t* table, const NODE_KEY_TYPE key) {
     if (table->nodes == NULL) {
         return NODE_DEFAULT_VALUE;
     }
-    
+#endif    
     uint64_t hash_value = GET_HASH(key);
      
     node_t* needed_node = find_node(table->nodes[hash_value % table->capacity], key);
@@ -193,6 +200,7 @@ NODE_VALUE_TYPE ht_get(ht_t* table, const NODE_KEY_TYPE key) {
 }
 
 size_t ht_print_content(ht_t* table, FILE* output_stream) {
+#if (DO_ASSERTS == 1)    
     if (table == NULL || output_stream == NULL) {
         return 0; // ! print out zero nodes if nothing happens
     }
@@ -200,7 +208,7 @@ size_t ht_print_content(ht_t* table, FILE* output_stream) {
     if (table->nodes == NULL) {
         return 0;
     }
-
+#endif
     size_t printed_nodes = 0;
     
     for (size_t node_idx = 0; node_idx < table->capacity; ++node_idx) {
@@ -260,7 +268,6 @@ static uint64_t HASH_6(const NODE_KEY_TYPE key) {
 
     for (unsigned i = 0; i < 4; ++i) {
         hash += _mm_crc32_u64(hash, *((uint64_t*) key));
-        
         key += 8;
     }
 

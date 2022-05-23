@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string.h>
+#include <stdio.h>
 // ----------------------------------------------------------------
 // ? Here you can define your custom types for hash table 
 // ! Also, don't forget to define default values for your types

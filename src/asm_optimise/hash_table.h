@@ -13,6 +13,8 @@
 static const double GROWTH_FACTOR = 1.61803398875; // 1 + (sqrt(5) - 1) / 2
 static const double   LOAD_FACTOR = 0.72f;         // load factor same as in C#  
 
+#define DO_ASSERTS 0
+
 typedef struct {
     node_t**  nodes;
     
