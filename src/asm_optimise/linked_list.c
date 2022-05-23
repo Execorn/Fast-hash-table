@@ -92,10 +92,11 @@ node_t* merge_lists(node_t* head, node_t* to_add) {
 }
 
 node_t* find_node(node_t* head, const NODE_KEY_TYPE key) {
+#if DO_ASSERTS == 1   
     if (head == NULL || key == NULL) {
         return NULL;
     }
-     
+#endif     
     node_t* current_node = head;
     while (current_node != NULL) {
         if (compare_key(current_node->key, key) == 0) {
