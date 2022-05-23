@@ -239,12 +239,27 @@ static uint64_t HASH_2(const NODE_KEY_TYPE key) {
 }
 
 static uint64_t HASH_3(const NODE_KEY_TYPE key) {
-    uint64_t hash = 0;
-    while (*key) {
-        hash += *(key++);
-    }
+    uint32_t sum = 0;
+    __asm__ __volatile__ (".intel_syntax noprefix;"
+            "push %1;"
+            "mov ecx, 32;"
+            "xor eax, eax;"
+            "lop%=:"
+            "cmp ecx, 0;"
+            "je end%=;"
+            "add eax, [%1];"
+            "inc %1;"
+            "dec ecx;"
+            "jmp lop%=;"
+            "end%=:"
+            "mov %0, eax;"
+            "pop %1;"
+            ".att_syntax prefix;"
+            : "=r" (sum)
+            : "r" (key)
+            : "ecx", "eax");
 
-    return hash;
+    return sum;        
 }
 
 static uint64_t HASH_4(const NODE_KEY_TYPE key) {
